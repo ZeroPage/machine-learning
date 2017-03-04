@@ -43,13 +43,13 @@ content_vgg = vgg16.Vgg16()
 content_vgg.build(content_batch)
 style_vgg = vgg16.Vgg16()
 style_vgg.build(style_batch)
-# _, conv1_1, conv2_1, conv3_1, conv4_1, conv5_1, _ = vgg.build(style_batch)
 
 x = tf.Variable(tf.random_uniform([1, 224, 224, 3], minval=0, maxval=255, dtype=tf.float32))
 variable_vgg = vgg16.Vgg16()
 variable_vgg.build(x / 255)
 
 result_image = tf.image.encode_png(tf.cast(x[0], tf.uint8))
+write_image = tf.write_file("img/output.png", result_image)
 
 content_loss = tf.nn.l2_loss(variable_vgg.conv4_2 - content_vgg.conv4_2)
 
@@ -71,10 +71,10 @@ E5_1 = get_layer_style_loss(variable_vgg.conv5_1, style_vgg.conv5_1)
 
 style_loss = (E1_1 + E2_1 + E3_1 + E4_1 + E5_1) / 5
 
-alpha, beta = 1, 1000
+alpha, beta = 1 / 1000, 1
 total_loss = alpha * content_loss + beta * style_loss
 
-train_op = tf.train.AdamOptimizer(1e-4).minimize(total_loss)
+train_op = tf.train.AdamOptimizer(1e-1).minimize(total_loss)
 
 init_op = tf.global_variables_initializer()
 
@@ -86,25 +86,11 @@ with tf.Session() as sess:
     coord = tf.train.Coordinator()
     threads = tf.train.start_queue_runners(coord=coord)
 
-    sess.run(train_op)
+    for i in range(100):
+        sess.run(train_op)
+        print(i, " loss : ", total_loss.eval())
 
-    # for i in range(1): #length of your filename list
-#    print(G1_1.get_shape())
-#     for i in range(2):
-        # content = resized_contents.eval() #here is your image Tensor :)
-        # style = resized_styles.eval()
-
-        # result = sess.run(content_vgg.prob)
-        # print_prob(result[0], './vgg/synset.txt')
-
-    # Image.imashow(Image.fromarray(np.asarray(content)))
-    # pyplot.imshow(content)
-
-    # matplotlib.pyplot.imshow(content)
-    # matplotlib.pyplot.show()
-    # print(sess.run(vgg.prob))
-    # from vgg import utils
-    # utils.print_prob(result[0], './vgg/synset.txt')
+    sess.run(write_image)
 
     coord.request_stop()
     coord.join(threads)
