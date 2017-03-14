@@ -2,6 +2,12 @@ import tensorflow as tf
 
 import vgg16
 
+flags = tf.app.flags
+FLAGS = flags.FLAGS
+
+flags.DEFINE_float('learning_rate', 1e+0, 'Initial learning rate.')
+flags.DEFINE_integer('max_steps', 500, 'Number of steps to run trainer.')
+
 contents_queue = tf.train.string_input_producer(['cat.jpg', 'dog.jpg']) # List of contents image file
 style_queue = tf.train.string_input_producer(['style.jpg']) # list of files to read
 
@@ -58,7 +64,7 @@ style_loss = (E1_1 + E2_1 + E3_1 + E4_1 + E5_1) / 5
 alpha, beta = 1 / 1000, 1
 total_loss = alpha * content_loss + beta * style_loss
 
-train_op = tf.train.AdamOptimizer(1e-1).minimize(total_loss)
+train_op = tf.train.AdamOptimizer(FLAGS.learning_rate).minimize(total_loss)
 
 init_op = tf.global_variables_initializer()
 
@@ -70,7 +76,7 @@ with tf.Session() as sess:
     coord = tf.train.Coordinator()
     threads = tf.train.start_queue_runners(coord=coord)
 
-    for i in range(100):
+    for i in range(FLAGS.max_steps):
         sess.run(train_op)
         print(i, " loss : ", total_loss.eval())
 
