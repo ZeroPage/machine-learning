@@ -1,22 +1,6 @@
 import tensorflow as tf
-import numpy as np
 
 import vgg16
-# from vgg16 import Vgg16
-
-def print_prob(prob, file_path):
-    synset = [l.strip() for l in open(file_path).readlines()]
-
-    # print prob
-    pred = np.argsort(prob)[::-1]
-
-    # Get top1 label
-    top1 = synset[pred[0]]
-    print("Top1: ", top1, prob[pred[0]])
-    # Get top5 label
-    top5 = [(synset[pred[i]], prob[pred[i]]) for i in range(5)]
-    print("Top5: ", top5)
-    return top1
 
 contents_queue = tf.train.string_input_producer(['cat.jpg', 'dog.jpg']) # List of contents image file
 style_queue = tf.train.string_input_producer(['style.jpg']) # list of files to read
