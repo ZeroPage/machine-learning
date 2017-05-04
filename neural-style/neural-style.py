@@ -24,7 +24,7 @@ def get_layer_style_loss(variable_layer, style_layer):
     G = tf.matmul(reshaped_variable, reshaped_variable, transpose_a=True)
     reshaped_style = tf.reshape(style_layer, (-1, N))
     A = tf.matmul(reshaped_style, reshaped_style, transpose_a=True)
-    return tf.nn.l2_loss(G - A) / (4.0 * N ** 2 * M ** 2)
+    return tf.nn.l2_loss(G - A) / (2.0 * N ** 2 * M ** 2)
 
 contentImg = read_image("state.jpg")
 styleImg   = read_image("style.jpg")
