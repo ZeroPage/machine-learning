@@ -24,11 +24,13 @@ class DQN:
 			self.X = tf.placeholder(shape=[None, self.input_n], dtype=tf.float32)
 
 			W1 = tf.get_variable("W1", shape=[self.input_n, 16], initializer=tf.contrib.layers.xavier_initializer())
-			L = tf.nn.tanh(tf.matmul(self.X, W1))
+			B1 = tf.Variable(tf.random_uniform([16], 0, 0.01))
+			L1 = tf.nn.relu_layer(self.X, W1, B1)
+			# L1 = tf.nn.tanh(tf.matmul(self.X, W1))
 
 			W2 = tf.get_variable("W2", shape=[16, self.output_n], initializer=tf.contrib.layers.xavier_initializer())
 
-			self.Qpred = tf.matmul(L, W2)
+			self.Qpred = tf.matmul(L1, W2)
 
 		self.Y = tf.placeholder(shape=[None, self.output_n], dtype=tf.float32)
 		self.loss = tf.reduce_sum(tf.square(self.Y - self.Qpred))
@@ -82,7 +84,7 @@ def main():
 		tf.global_variables_initializer().run()
 
 		for i in range(epoch):
-			e = 1 / (i / 50 + 10)
+			e = 1. / (i / 10 + 1)
 			step = 0
 			done = False
 			state = env.reset()

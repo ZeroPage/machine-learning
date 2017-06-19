@@ -33,7 +33,7 @@ Qpred = tf.matmul(O2, W3) + B3
 # W = tf.Variable(tf.random_uniform([input_size, output_size], 0, 0.1))
 # Qpred = tf.matmul(X, W)
 
-loss = tf.reduce_sum(tf.square(Y - Qpred))
+loss = tf.reduce_mean(tf.square(Y - Qpred))
 train = tf.train.GradientDescentOptimizer(learing_rate).minimize(loss)
 
 rList = []
